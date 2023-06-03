@@ -42,8 +42,8 @@ message(STATUS "Compile sources into a library? ${USE_LIBRARY}") #output hint in
 # set(BUILD_SHARED_LIBS OFF)
 
 include(CMakeDependentOption)
-cmake_dependent_option(MAKE_STATIC_LIBRARY "Compile sources into a static library" OFF "USE_LIBRARY" ON)
-cmake_dependent_option(MAKE_SHARED_LIBRARY "Compile sources into a static library" ON "USE_LIBRARY" ON)
+cmake_dependent_option(MAKE_STATIC_LIBRARY "Compile sources into a static library" OFF "USE_LIBRARY" ON) #if USE_LIBRARY=ON, MAKE_STATIC_LIBRARY=OFF
+cmake_dependent_option(MAKE_SHARED_LIBRARY "Compile sources into a static library" ON "USE_LIBRARY" ON) #and MAKE_SHARED_LIBRARY=ON
 message(STATUS "MAKE_STATIC_LIBRARY=${MAKE_STATIC_LIBRARY}")
 message(STATUS "MAKE_SHARED_LIBRARY=${MAKE_SHARED_LIBRARY}")
 
@@ -52,9 +52,27 @@ list(APPEND _SOURCES message.h message.cpp) #add a local variable
 
 # Contorl compilation based on USE_LIBRARY
 if(USE_LIBRARY)
-    # Add a library
-    #since BUILD_SHARED_LIBS=OFF, we build a static library.
-    add_library(message ${_SOURCES})
+    # # Add a library
+    # #since BUILD_SHARED_LIBS=OFF, we build a static library.
+    # add_library(message ${_SOURCES})
+    # add_executable(hello-world hello-world.cpp)
+    # target_link_libraries(hello-world message)
+
+    message(STATUS "MAKE_STATIC_LIBRARY=${MAKE_STATIC_LIBRARY}")
+    message(STATUS "MAKE_SHARED_LIBRARY=${MAKE_SHARED_LIBRARY}")
+
+    if(MAKE_SHARED_LIBRARY)
+        add_library(message SHARED ${_SOURCES})
+        # add_executable(hello-world hello-world.cpp)
+        # target_link_libraries(hello-world message)
+    endif(MAKE_SHARED_LIBRARY)
+
+    if(MAKE_STATIC_LIBRARY)
+        add_library(message STATIC ${_SOURCES})
+        # add_executable(hello-world hello-world.cpp)
+        # target_link_libraries(hello-world message)
+    endif(MAKE_STATIC_LIBRARY)
+
     add_executable(hello-world hello-world.cpp)
     target_link_libraries(hello-world message)
 
